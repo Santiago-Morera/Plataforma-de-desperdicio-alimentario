@@ -1,3 +1,4 @@
+🚀 **Ver prototipo funcional (MVP) en vivo:** [plataforma-de-desperdicio-alimentar.vercel.app](https://plataforma-de-desperdicio-alimentar.vercel.app)
 # Plataforma Digital contra el Desperdicio Alimentario 🍏🥦
 
 Este proyecto consiste en el desarrollo conceptual y técnico de una plataforma digital diseñada para abordar la problemática del desperdicio de alimentos perecederos, alineándose con el **ODS 2: Hambre Cero**.
