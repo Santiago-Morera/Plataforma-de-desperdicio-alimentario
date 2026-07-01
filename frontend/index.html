@@ -4,28 +4,150 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FoodRescue Hub - MVP</title>
-    <!-- Tailwind CSS para el diseño -->
+    <!-- Tailwind CSS para los estilos rápidos -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Scripts de React para que funcione directamente en el navegador sin romperse -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <!-- Babel para que el navegador entienda el código JSX de React -->
+    <!-- React y ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel para compilar JSX en vivo -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
-  <body>
+  <body class="bg-gray-50 text-gray-800 font-sans">
     
     <div id="root"></div>
 
-    <!-- Cargamos tu componente App.jsx y lo montamos en el DOM real -->
-    <script type="text/babel" src="/src/App.jsx"></script>
-    
     <script type="text/babel">
-      // Esperamos a que tu componente App se cargue y lo renderizamos en el id="root"
-      setTimeout(() => {
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-      }, 500);
-    </script>
+      const { useState } = React;
 
+      function App() {
+        // Estado inicial simulando base de datos
+        const [donaciones, setDonaciones] = useState([
+          { id: 1, producto: "Tomates Orgánicos", cantidad: "15 Kg", estado: "Disponible", tipo: "Frutas/Verduras" },
+          { id: 2, producto: "Pan Artesanal", cantidad: "20 Unidades", estado: "Entregado", tipo: "Panadería" },
+          { id: 3, producto: "Lácteos Varios", cantidad: "10 Litros", estado: "Disponible", tipo: "Lácteos" }
+        ]);
+
+        const [producto, setProducto] = useState('');
+        const [cantidad, setCantidad] = useState('');
+        const [tipo, setTipo] = useState('Frutas/Verduras');
+
+        const handleRegistrar = (e) => {
+          e.preventDefault();
+          if (!producto || !cantidad) return alert("Por favor completa los campos");
+
+          const nuevaDonacion = {
+            id: Date.now(),
+            producto,
+            cantidad,
+            tipo,
+            estado: "Disponible"
+          };
+
+          setDonaciones([nuevaDonacion, ...donaciones]);
+          setProducto('');
+          setCantidad('');
+        };
+
+        const cambiarEstado = (id) => {
+          setDonaciones(donaciones.map(don => 
+            don.id === id ? { ...don, estado: don.estado === "Disponible" ? "Entregado" : "Disponible" } : don
+          ));
+        };
+
+        return (
+          <div class="min-h-screen">
+            {/* Header */}
+            <header class="bg-emerald-600 text-white p-4 shadow-md">
+              <div class="max-w-5xl mx-auto flex justify-between items-center">
+                <h1 class="text-xl font-bold flex items-center gap-2">🍲 FoodRescue Hub</h1>
+                <span class="bg-emerald-700 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold">MVP Panel</span>
+              </div>
+            </header>
+
+            <main class="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Formulario */}
+              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
+                <h2 class="text-lg font-bold mb-4 text-emerald-700">Registrar Excedente</h2>
+                <form onSubmit={handleRegistrar} class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-600">Nombre del Alimento</label>
+                    <input 
+                      type="text" 
+                      value={producto} 
+                      onChange={(e) => setProducto(e.target.value)}
+                      placeholder="Ej. Manzanas rojas" 
+                      class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-600">Cantidad / Peso</label>
+                    <input 
+                      type="text" 
+                      value={cantidad} 
+                      onChange={(e) => setCantidad(e.target.value)}
+                      placeholder="Ej. 10 Kg, 5 Bolsas" 
+                      class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-600">Categoría</label>
+                    <select 
+                      value={tipo} 
+                      onChange={(e) => setTipo(e.target.value)}
+                      class="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option>Frutas/Verduras</option>
+                      <option>Panadería</option>
+                      <option>Lácteos</option>
+                      <option>Abarrotes</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-md transition-colors shadow-sm">
+                    Publicar Donación
+                  </button>
+                </form>
+              </div>
+
+              {/* Lista en Tiempo Real */}
+              <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-lg font-bold mb-4 text-gray-700 flex justify-between items-center">
+                  <span>Donaciones en Tiempo Real</span>
+                  <span class="text-xs font-normal text-gray-500">Total: {donaciones.length} items</span>
+                </h2>
+
+                <div class="space-y-3">
+                  {donaciones.map((don) => (
+                    <div key={don.id} class="p-4 border border-gray-100 rounded-lg bg-gray-50 flex justify-between items-center hover:shadow-sm transition-shadow">
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <h3 class="font-semibold text-gray-800">{don.producto}</h3>
+                          <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-medium">{don.tipo}</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Cantidad disponible: <span class="font-medium text-gray-700">{don.amount || don.cantidad}</span></p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class={`px-2.5 py-1 rounded-full text-xs font-semibold ${don.estado === 'Disponible' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
+                          {don.estado}
+                        </span>
+                        <button 
+                          onClick={() => cambiarEstado(don.id)} 
+                          class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 py-1.5 px-3 rounded-md transition-colors"
+                        >
+                          {don.estado === 'Disponible' ? 'Marcar Entregado' : 'Reabrir'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </main>
+          </div>
+        );
+      }
+
+      // Renderizar la app directamente
+      const root = MyReactDOM || ReactDOM;
+      root.createRoot(document.getElementById('root')).render(<App />);
+    </script>
   </body>
 </html>
